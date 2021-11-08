@@ -1,10 +1,3 @@
-//Prasidis Ioannis 
-//A.M: cse46373
-//Tmima Deuteras 15:00-16:00 ( D1-B )
-//Askisi-1 2018-2019
-
-//το πρόγραμμα τρέχει αν δώσει ο χρήστης αριθμούς που είναι ακέραια πολλαπλάσια των επεξεργαστών που θα χρησιμοποιήσει.Υπάρχει menu επιλογών και εμφανίζεται επαναληπτικά.
-
 #include <stdio.h>
 #include <mpi.h>
 #define SIZE 1000
@@ -150,4 +143,3 @@ if (rank != 0) {
   MPI_Finalize();
 	
   }
-//telos programmatos
