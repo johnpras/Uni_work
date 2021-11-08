@@ -1,8 +1,3 @@
-// tmima D1-B deutera 14:00-16:00
-// Prasidis Ioannis cse 46373
-// askisi 2
-
-
 #include <stdio.h>
 #include <stdlib.h>
 #include "mpi.h"
