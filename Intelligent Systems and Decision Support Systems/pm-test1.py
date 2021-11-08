@@ -1,9 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Sun May 31 22:14:55 2020
-
-@author: theod
-"""
 import pandas as pd
 from pm4py.objects.log.importer.xes import importer as xes_import
 from pm4py.objects.log.util import log as utils
