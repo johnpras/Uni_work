@@ -47,10 +47,10 @@ public class Server {
 		File ff = new File("E:\\eclipse-workspace\\polimesa\\videos\\");
 	    String[] filenames;
 	    String[] datafromclient;
-	    filenames = ff.list(); 	//παίρνω τα ονόματα των αρχείων που βρίσκονται στο φάκελο videos.   
+	    filenames = ff.list(); 	
 	    List<String> list1 = new ArrayList<String>(); 
 	     
-	    //περί gui
+
         JFrame frame = new JFrame();
         frame.setSize(400,400);//400 width and 500 height  
 		frame.setVisible(true);//making the frame visible  
@@ -78,37 +78,30 @@ public class Server {
 		// όπου strC αυτό που παίρνει απο client, strS στέλνει ο Server
 		String strC="",strS="";  
 		
-//filenamestoprint λίστα με ονόματα αρχείων στο videos πιο κομψό, onomata είναι το τι θα στείλει στον client μετά από τις επιλογές που θα κάνει
 String onomata="";
 String filenamestoprint = Arrays.toString(filenames).replace(",", "\n").replace("[", "").replace("]", "").trim();
 
-//εν τέλη μόνο το πρώτο χρησιμοποιώ, αλλά έτσι είχα σκεφτεί να το πάω
 String[] commands= {"Dwse bitrate kai format *hint: XMbps,_format or 1Mbps, avi\nExw ta parakatw arxeia \n"+filenamestoprint, "dialexe onoma \n"+onomata, "dialexe protocol", "streamarw" };
 	
 //δεν μας νοιάζει τόσο, μια φορά θα χρησιμοποιηθεί
 	int j=0;	
 			
-//(ρωτάει ο server)δώσε bitrate και format και του δείχνει τα αρχεία(την κατεβατή λίστα με όλα τα ονόματα των βίντεο)
 			strS = commands[j];
 			dout.writeUTF(strS); 
 			dout.flush();
 			j++;
 			
-//διαβάζει ο server bitrate και format		
 			strC=din.readUTF();  
 			tarea.setText("client says: "+strC);
 			System.out.println("client says: "+tarea.getText());			
 			
-//παίρνει ο server τα δεδομένα του client και μπαίνουν σε ένα string[] για να τα χειριστώ αργότερα	
 			datafromclient = strC.split(", ");	
 			
-//ώστε αν πχ είναι avi το format:			
 			if(datafromclient[1].contains("avi")) {
-//μετά κοιτάω το bitrate				
 				if(datafromclient[0].equals("0.2Mbps")) {	
 					for(int i=0; i<filenames.length; i++){
 						 if(filenames[i].contains("0.2Mbps.avi")) {
-							 	list1.add(filenames[i]);		//προσθέτει σε μια λίστα τα ονόματα των αρχείων που κάνουν match με αυτά που θέλει
+							 	list1.add(filenames[i]);	
 						 }
 					 }			
 				}
@@ -133,44 +126,40 @@ String[] commands= {"Dwse bitrate kai format *hint: XMbps,_format or 1Mbps, avi\
 						 }
 					 }	
 				}	
-//(ρωτάει ο server) να διαλέξει όνομα ο client	από τη νέα λίστα με ονόματα αρχείων	
+
 				onomata=String.join(", ", list1);
 				strS= "dialexe onoma \n"+onomata;
 				dout.writeUTF(strS); 
 				dout.flush();
 				j++;
 				
-//διαβάζω την απάντηση του client και την τοποθετώ στο "nameofchosenvideo"
+
 				strC=din.readUTF();  
 				tarea.setText("client says: "+strC);
 				System.out.println("client says: "+tarea.getText());
 				String nameofchosenvideo = strC;
-//αν αυτό που έδωσε ο client βρίσκεται στην λίστα, δηλαδή δε διάλεξε κάτι από τη φαντασία του ή δεν έκανε τυπογραφικό (δεν ελέγχω σε περίπτωση λάθους )				
-				if(list1.contains(nameofchosenvideo)){
-//ρωτάει τον client να δώσει πρωτόκολλο					
+			
+				if(list1.contains(nameofchosenvideo)){				
 					strS = "Dwse prwtokollo";
 					dout.writeUTF(strS); 
-					dout.flush(); 
-//αποθηκεύει το πρωτόκολλο σε μια μεταβλητή		
+					dout.flush(); 	
 					strC=din.readUTF();  
 					tarea.setText("client says: "+strC);
 					System.out.println("client says: "+tarea.getText());
 					String nameofchosenprotocol =strC;
-//στέλνει στον client ότι κάνει streaming
 					strS = "streaming";
 					dout.writeUTF(strS); 
 					dout.flush(); 
-//αν διάλεξε tcp					
+					
 					if(nameofchosenprotocol.contains("tcp")) {	
-/* κανει stream*/		Process process = new ProcessBuilder("cmd.exe", "/k", "cd E:\\ffmpeg\\bin\\ && ffmpeg -re -i "+" E:\\eclipse-workspace\\polimesa\\videos\\"+nameofchosenvideo+" -f avi tcp://127.0.0.1:1234?listen").start();
-/* η udp κ.ο.κ*/	} else if (nameofchosenprotocol.contains("udp")) {
+		Process process = new ProcessBuilder("cmd.exe", "/k", "cd E:\\ffmpeg\\bin\\ && ffmpeg -re -i "+" E:\\eclipse-workspace\\polimesa\\videos\\"+nameofchosenvideo+" -f avi tcp://127.0.0.1:1234?listen").start();
+	} else if (nameofchosenprotocol.contains("udp")) {
 			     		Process process = new ProcessBuilder("cmd.exe", "/k", "cd E:\\ffmpeg\\bin\\ && ffmpeg -re -i "+" E:\\eclipse-workspace\\polimesa\\videos\\"+nameofchosenvideo+" -f avi udp://127.0.0.1:1234").start();
 					} else if (nameofchosenprotocol.contains("rtp")) {
 			     		Process process = new ProcessBuilder("cmd.exe", "/k", "cd E:\\ffmpeg\\bin\\ && ffmpeg -re -i "+" E:\\eclipse-workspace\\polimesa\\videos\\"+nameofchosenvideo+" -f rtp -sdp_file video.sdp \"rtp://127.0.0.1:1234\"").start();
 					} //to sdp video βρίσκεται στο φάκελο που είναι εγκατεστημένο το ffmpeg
 				}
-			}
-//ακριβώς ίδια διαδικασία για mp4 ...		
+			}		
 			else if(datafromclient[1].contains("mp4")) {
 				
 				if(datafromclient[0].equals("0.2Mbps")) {	
@@ -237,8 +226,7 @@ String[] commands= {"Dwse bitrate kai format *hint: XMbps,_format or 1Mbps, avi\
 			     		Process process = new ProcessBuilder("cmd.exe", "/k", "cd E:\\ffmpeg\\bin\\ && ffmpeg -re -i "+" E:\\eclipse-workspace\\polimesa\\videos\\"+nameofchosenvideo+" -f rtp -sdp_file video.sdp \"rtp://127.0.0.1:1234\"").start();
 					}
 				}
-			}
-//και για mkv			
+			}		
 			else if(datafromclient[1].contains("mkv")) {
 				
 				if(datafromclient[0].equals("0.2Mbps")) {	
